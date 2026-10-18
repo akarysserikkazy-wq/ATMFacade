@@ -1,0 +1,47 @@
+package com.company;
+
+public class Main {
+    public static void main(String[] args) {
+        CardReader cardReader = new CardReader();
+        PinValidator pinValidator = new PinValidator("1234");
+        BankAccount account = new BankAccount(50000);
+        CashDispenser cashDispenser = new CashDispenser(100000);
+        ReceiptPrinter receiptPrinter = new ReceiptPrinter();
+
+        System.out.println("=== WITHOUT facade ===");
+        cardReader.insertCard();
+        if (pinValidator.validate("1234")
+                && cashDispenser.canDispense(5000)
+                && account.hasEnoughFunds(5000)) {
+            account.withdraw(5000);
+            cashDispenser.dispense(5000);
+            receiptPrinter.printReceipt(5000, account.getBalance());
+        }
+        cardReader.ejectCard();
+
+        System.out.println("\n=== WITH facade ===");
+        AtmFacade atm = new AtmFacade(cardReader, pinValidator, account,
+                cashDispenser, receiptPrinter);
+
+        System.out.println("\n--- 1. Success ---");
+        atm.withdrawCash("1234", 10000);
+
+        System.out.println("\n--- 2. Wrong PIN ---");
+        atm.withdrawCash("0000", 5000);
+
+        System.out.println("\n--- 3. Insufficient funds ---");
+        atm.withdrawCash("1234", 60000);
+
+        System.out.println("\n--- 4. Invalid amount ---");
+        atm.withdrawCash("1234", 125);
+
+        System.out.println("\n--- 5. Card blocked ---");
+        atm.withdrawCash("1", 1000);
+        System.out.println();
+        atm.withdrawCash("2", 1000);
+        System.out.println();
+        atm.withdrawCash("3", 1000);
+        System.out.println();
+        atm.withdrawCash("1234", 1000);
+    }
+}
