@@ -7,6 +7,11 @@ public class AtmFacade {
     private final CashDispenser cashDispenser;
     private final ReceiptPrinter receiptPrinter;
 
+    public AtmFacade() {
+        this(new CardReader(), new PinValidator("1234"), new BankAccount(50000),
+                new CashDispenser(100000), new ReceiptPrinter());
+    }
+
     public AtmFacade(CardReader cardReader,
                      PinValidator pinValidator,
                      BankAccount account,
